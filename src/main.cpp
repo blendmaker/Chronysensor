@@ -10,12 +10,16 @@ volatile unsigned long startTime = 0;
 volatile double travelTime = 0;
 
 void inputTriggered() {
+  travelTime = 0;
   startTime = micros();
 }
 
 void outputTriggered() {
-  travelTime = (micros()-startTime)*0.000001f;
-  startTime = 0;
+  if (startTime != 0)
+  {
+    travelTime = (micros()-startTime)*0.000001f;
+    startTime = 0;
+  }
 }
 
 void setup() {
@@ -28,7 +32,6 @@ void setup() {
 
   pinMode(input1, INPUT_PULLUP);
   pinMode(input2, INPUT_PULLUP);
-
   
   attachInterrupt( digitalPinToInterrupt(input1), inputTriggered,  FALLING);
   attachInterrupt( digitalPinToInterrupt(input2), outputTriggered,  FALLING);
@@ -37,7 +40,8 @@ void setup() {
 void loop() {
   if (travelTime > 0) {
     double mps = distance / travelTime;
-    Serial.println(String(mps));
+    Serial.print(String(mps));
+    Serial.print(";");
     travelTime = 0;
   }
 }
